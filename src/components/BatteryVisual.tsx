@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Zap } from 'lucide-react';
 
 export interface BatteryVisualProps {
@@ -170,6 +170,67 @@ export const BatteryVisual: React.FC<BatteryVisualProps> = ({
   );
 };
 
+export interface EvBatteryThumbnailProps {
+  isDeparture?: boolean;
+  className?: string;
+  alt?: string;
+}
+
+export const EvBatteryThumbnail: React.FC<EvBatteryThumbnailProps> = ({
+  isDeparture = false,
+  className = '',
+  alt = 'EV Battery',
+}) => {
+  const [hasError, setHasError] = useState(false);
+
+  const imageSrc = isDeparture
+    ? '/images/battery_charge_3d.jpg'
+    : '/images/ev_battery_pack.jpg';
+
+  if (hasError) {
+    // Beautiful vector 3D-styled fallback with metallic shell and glowing cells
+    return (
+      <div
+        className={`relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-[#123D30] p-1.5 shadow-inner rounded-xl ${className}`}
+      >
+        <div className="w-full h-full rounded-lg border border-emerald-500/30 flex flex-col justify-between p-1 bg-black/40">
+          <div className="flex justify-between items-center px-1 pt-0.5">
+            <span className="h-1.5 w-2 rounded-xs bg-emerald-400 shadow-[0_0_6px_#34d399]" />
+            <span className="text-[8px] font-black tracking-widest text-emerald-300">
+              {isDeparture ? '240 kW' : '360 kWh'}
+            </span>
+          </div>
+          <div className="flex items-center justify-center my-auto">
+            <Zap className={`w-5 h-5 ${isDeparture ? 'text-emerald-400 fill-emerald-400 animate-pulse' : 'text-amber-400 fill-amber-400'}`} />
+          </div>
+          <div className="grid grid-cols-4 gap-1 px-0.5 pb-0.5">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <span
+                key={i}
+                className={`h-1.5 rounded-xs ${
+                  isDeparture || i < 2
+                    ? 'bg-gradient-to-t from-emerald-500 to-emerald-300 shadow-[0_0_5px_#10b981]'
+                    : 'bg-gray-700'
+                }`}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={imageSrc}
+      alt={alt}
+      onError={() => setHasError(true)}
+      referrerPolicy="no-referrer"
+      className={`w-full h-full object-cover ${className}`}
+    />
+  );
+};
+
 export interface BatteryCardPictureProps {
   title: string;
   soc: number;
@@ -239,15 +300,10 @@ export const BatteryCardPicture: React.FC<BatteryCardPictureProps> = ({
       <div className="py-2 flex items-center justify-between gap-4 z-10">
         {/* Render 3D EV Battery Pack Image */}
         <div className="relative w-20 h-20 rounded-2xl overflow-hidden border border-gray-100 shadow-inner bg-gradient-to-br from-gray-50 to-gray-100 flex-shrink-0 group">
-          <img
-            src={
-              isDeparture
-                ? '/src/assets/images/battery_charge_3d_1791434765547.jpg'
-                : '/src/assets/images/ev_battery_pack_1791434747815.jpg'
-            }
+          <EvBatteryThumbnail
+            isDeparture={isDeparture}
             alt={`${title} Battery Graphic`}
-            referrerPolicy="no-referrer"
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            className="group-hover:scale-105 transition-transform duration-300"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
           <div className="absolute bottom-1 left-1.5 right-1.5 flex items-center justify-between text-[9px] font-bold text-white drop-shadow">

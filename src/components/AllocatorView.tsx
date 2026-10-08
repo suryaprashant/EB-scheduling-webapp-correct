@@ -9,7 +9,7 @@ import {
 } from '../engine/chargingAllocationEngine';
 import { SocDonutChart } from './SocDonutChart';
 import { ChargerStatusGrid } from './ChargerStatusGrid';
-import { BatteryVisual, BatteryCardPicture } from './BatteryVisual';
+import { BatteryVisual, BatteryCardPicture, EvBatteryThumbnail } from './BatteryVisual';
 import { Zap, Bus, Clock, Battery, Play, RotateCcw, Sparkles, CheckCircle2, AlertTriangle, PlusCircle } from 'lucide-react';
 
 interface AllocatorViewProps {
@@ -420,12 +420,7 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-300/40 shadow-xs bg-emerald-50 flex-shrink-0">
-                    <img
-                      src="/src/assets/images/battery_charge_3d_1791434765547.jpg"
-                      alt="3D Battery Pack"
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover"
-                    />
+                    <EvBatteryThumbnail isDeparture alt="3D Battery Pack" className="w-full h-full object-cover" />
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2">

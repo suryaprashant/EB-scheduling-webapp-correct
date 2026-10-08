@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24, formatTime12 } from '../engine/chargingAllocationEngine';
-import { BatteryVisual } from './BatteryVisual';
+import { BatteryVisual, EvBatteryThumbnail } from './BatteryVisual';
 import { Zap, Bus, CalendarDays, CheckCircle2, ArrowRight, BatteryCharging, PlugZap } from 'lucide-react';
 
 interface OverviewViewProps {
@@ -31,10 +31,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
       <div className="bg-[#123D30] rounded-3xl p-7 text-white shadow-xl relative overflow-hidden">
         {/* Subtle decorative background 3D battery module */}
         <div className="absolute -right-6 -bottom-6 w-48 h-48 rounded-full overflow-hidden opacity-20 pointer-events-none hidden md:block">
-          <img
-            src="/src/assets/images/ev_battery_pack_1791434747815.jpg"
+          <EvBatteryThumbnail
+            isDeparture={false}
             alt="EV Battery Background"
-            referrerPolicy="no-referrer"
             className="w-full h-full object-cover"
           />
         </div>
@@ -92,10 +91,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
         >
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-2xl overflow-hidden border border-emerald-200/80 shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform bg-emerald-50">
-              <img
-                src="/src/assets/images/battery_charge_3d_1791434765547.jpg"
+              <EvBatteryThumbnail
+                isDeparture
                 alt="Battery SOC"
-                referrerPolicy="no-referrer"
                 className="w-full h-full object-cover"
               />
             </div>

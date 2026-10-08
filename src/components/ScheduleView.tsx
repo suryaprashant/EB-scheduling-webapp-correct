@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24, formatTime12 } from '../engine/chargingAllocationEngine';
-import { BatteryVisual } from './BatteryVisual';
+import { BatteryVisual, EvBatteryThumbnail } from './BatteryVisual';
 import { AlertTriangle, Battery, Bus, CalendarDays, Plus, PlugZap, Search, Trash2, Zap } from 'lucide-react';
 
 interface ScheduleViewProps {
@@ -87,10 +87,9 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
           <div className="relative flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl overflow-hidden border border-emerald-200 shadow-xs bg-[#E4F3EA]">
-            <img
-              src="/src/assets/images/battery_charge_3d_1791434765547.jpg"
+            <EvBatteryThumbnail
+              isDeparture
               alt="Battery SOC"
-              referrerPolicy="no-referrer"
               className="w-full h-full object-cover"
             />
           </div>

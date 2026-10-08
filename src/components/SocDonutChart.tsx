@@ -1,5 +1,5 @@
 import React from 'react';
-import { BatteryVisual } from './BatteryVisual';
+import { BatteryVisual, EvBatteryThumbnail } from './BatteryVisual';
 import { Zap } from 'lucide-react';
 
 interface SocDonutChartProps {
@@ -25,21 +25,16 @@ export const SocDonutChart: React.FC<SocDonutChartProps> = ({
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (clamped / 100) * circumference;
 
-  const batteryImage = isDeparture
-    ? '/src/assets/images/battery_charge_3d_1791434765547.jpg'
-    : '/src/assets/images/ev_battery_pack_1791434747815.jpg';
-
   return (
     <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col items-center flex-1 relative overflow-hidden group hover:border-emerald-200 transition-all">
       {/* Battery Picture Header Bar */}
       <div className="w-full flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg overflow-hidden border border-gray-200 shadow-2xs bg-gray-50 flex-shrink-0">
-            <img
-              src={batteryImage}
+            <EvBatteryThumbnail
+              isDeparture={isDeparture}
               alt="EV Battery"
-              referrerPolicy="no-referrer"
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              className="group-hover:scale-110 transition-transform duration-300"
             />
           </div>
           <div>

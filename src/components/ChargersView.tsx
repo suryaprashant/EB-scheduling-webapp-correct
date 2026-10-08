@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24 } from '../engine/chargingAllocationEngine';
-import { BatteryVisual } from './BatteryVisual';
+import { BatteryVisual, EvBatteryThumbnail } from './BatteryVisual';
 import { Bus, PlugZap, Zap } from 'lucide-react';
 
 interface ChargersViewProps {
@@ -43,11 +43,10 @@ export const ChargersView: React.FC<ChargersViewProps> = ({ sessions }) => {
                   
                   {/* Battery Pack Graphic Badge */}
                   <div className="absolute left-2.5 bottom-2.5 w-9 h-9 rounded-lg overflow-hidden border border-emerald-300 shadow-xs bg-white/90">
-                    <img
-                      src="/src/assets/images/battery_charge_3d_1791434765547.jpg"
+                    <EvBatteryThumbnail
+                      isDeparture
                       alt="Battery Module"
-                      referrerPolicy="no-referrer"
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="group-hover:scale-110 transition-transform duration-300"
                     />
                   </div>
 
