@@ -55,7 +55,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             </div>
             <div>
               <span className="flex items-center gap-2 text-2xl font-bold">
-                <div className="w-7 h-7 rounded-lg overflow-hidden border border-emerald-400/40 bg-white shadow-xs p-0.5">
+                <div className="w-14 h-14 rounded-xl overflow-hidden border border-emerald-400/40 bg-white shadow-xs p-1">
                   <EvBusThumbnail className="w-full h-full object-cover" />
                 </div>
                 101
@@ -157,7 +157,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           {upcoming.map(s => (
             <div key={s.id} className="py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-200 bg-white shadow-2xs flex-shrink-0">
+                <div className="w-16 h-16 rounded-xl overflow-hidden border border-emerald-200 bg-white shadow-2xs flex-shrink-0">
                   <EvBusThumbnail className="w-full h-full object-cover" alt={`Bus ${s.bus}`} />
                 </div>
                 <div>

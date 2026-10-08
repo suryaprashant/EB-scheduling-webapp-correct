@@ -20,7 +20,7 @@ interface AllocatorViewProps {
 export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSession }) => {
   const [busNumberInput, setBusNumberInput] = useState<string>('4');
   const [arrivalTimeInput, setArrivalTimeInput] = useState<string>('20:00');
-  const [arrivalSocInput, setArrivalSocInput] = useState<string>('10');
+  const [arrivalSocInput, setArrivalSocInput] = useState<string>('20');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [result, setResult] = useState<AllocationResult | null>(null);
   const [addedSuccess, setAddedSuccess] = useState<boolean>(false);
@@ -41,7 +41,7 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
   // Run initial allocation on mount
   useEffect(() => {
     const initialResult = allocate(
-      { busNumber: 4, arrivalTime: '20:00', arrivalSoc: 10 },
+      { busNumber: 4, arrivalTime: '20:00', arrivalSoc: 20 },
       sessions
     );
     setResult(initialResult);
@@ -59,8 +59,8 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
       return;
     }
     const soc = parseFloat(arrivalSocInput);
-    if (isNaN(soc) || soc < 0 || soc > 100) {
-      setErrorMessage('Enter valid arrival SOC (0 to 100%)');
+    if (isNaN(soc) || soc < 20 || soc > 100) {
+      setErrorMessage('Enter valid arrival SOC (20 to 100%)');
       return;
     }
 
@@ -73,7 +73,7 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
   const handleReset = () => {
     setBusNumberInput('');
     setArrivalTimeInput('');
-    setArrivalSocInput('');
+    setArrivalSocInput('20');
     setErrorMessage(null);
     setResult(null);
     setAddedSuccess(false);
@@ -82,10 +82,10 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
   const handleLoadSample = () => {
     setBusNumberInput('4');
     setArrivalTimeInput('20:00');
-    setArrivalSocInput('10');
+    setArrivalSocInput('20');
     setErrorMessage(null);
     setAddedSuccess(false);
-    const res = allocate({ busNumber: 4, arrivalTime: '20:00', arrivalSoc: 10 }, sessions);
+    const res = allocate({ busNumber: 4, arrivalTime: '20:00', arrivalSoc: 20 }, sessions);
     setResult(res);
   };
 
@@ -152,7 +152,7 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                    <div className="w-7 h-7 rounded-lg overflow-hidden border border-emerald-200 bg-white shadow-2xs">
+                    <div className="w-14 h-14 rounded-xl overflow-hidden border border-emerald-200 bg-white shadow-2xs">
                       <EvBusThumbnail className="w-full h-full object-cover" alt="Switch EiV12" />
                     </div>
                   </div>
@@ -165,7 +165,7 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
                       setAddedSuccess(false);
                     }}
                     placeholder="e.g. 4"
-                    className="w-full pl-12 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1A6B52] focus:border-transparent text-sm font-semibold text-gray-800"
+                    className="w-full pl-[4.5rem] pr-4 py-4 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1A6B52] focus:border-transparent text-sm font-semibold text-gray-800"
                   />
                 </div>
               </div>
@@ -234,7 +234,7 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
                   <input
                     type="number"
                     step="0.1"
-                    min="0"
+                    min="20"
                     max="100"
                     value={arrivalSocInput}
                     onChange={e => {
@@ -242,7 +242,7 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
                       setErrorMessage(null);
                       setAddedSuccess(false);
                     }}
-                    placeholder="e.g. 10"
+                    placeholder="e.g. 20"
                     className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#1A6B52] focus:border-transparent text-sm font-semibold text-gray-800"
                   />
                   <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-400 font-bold text-xs">
@@ -252,7 +252,7 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
 
                 {/* SOC Quick Selection Presets */}
                 <div className="flex items-center gap-2 mt-2">
-                  {['10', '20', '35', '50'].map(socPreset => (
+                  {['20', '35', '50'].map(socPreset => (
                     <button
                       key={socPreset}
                       type="button"

@@ -93,7 +93,7 @@ export const ChargersView: React.FC<ChargersViewProps> = ({ sessions }) => {
                         >
                           <div className="flex items-center gap-1.5">
                             <span className="inline-flex items-center gap-1.5 font-bold text-gray-800">
-                              <div className="w-5 h-5 rounded-md overflow-hidden flex-shrink-0 border border-emerald-100 bg-white">
+                              <div className="w-11 h-11 rounded-lg overflow-hidden flex-shrink-0 border border-emerald-100 bg-white">
                                 <EvBusThumbnail className="w-full h-full object-cover" alt={`Bus ${s.bus}`} />
                               </div>
                               Bus {s.bus}

@@ -152,7 +152,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
               <tr>
                 <th className="px-5 py-3">
                   <span className="inline-flex items-center gap-1.5">
-                    <div className="w-4 h-4 rounded-xs overflow-hidden flex-shrink-0 bg-white border border-gray-200">
+                    <div className="w-8 h-8 rounded-md overflow-hidden flex-shrink-0 bg-white border border-gray-200">
                       <EvBusThumbnail className="w-full h-full object-cover" />
                     </div>
                     Bus
@@ -182,7 +182,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
                   <tr key={session.id} className="hover:bg-gray-50/80 transition-colors">
                     <td className="px-5 py-3 font-bold text-gray-900">
                       <span className="inline-flex items-center gap-2">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden border border-emerald-200 bg-white">
+                        <span className="flex h-14 w-14 items-center justify-center rounded-xl overflow-hidden border border-emerald-200 bg-white">
                           <EvBusThumbnail className="w-full h-full object-cover" alt={`Bus ${session.bus}`} />
                         </span>
                         Bus {session.bus.toString().padStart(2, '0')}

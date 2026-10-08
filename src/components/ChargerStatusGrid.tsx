@@ -107,7 +107,7 @@ const ChargerRow: React.FC<{ snapshot: ChargerSnapshot; isAllocatedHere: boolean
         )}
         <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-bold ${badgeClass}`}>
           {!isIdle && (
-            <div className="w-3.5 h-3.5 rounded-xs overflow-hidden flex-shrink-0 bg-white border border-amber-300">
+            <div className="w-9 h-9 rounded-lg overflow-hidden flex-shrink-0 bg-white border border-amber-300">
               <EvBusThumbnail className="w-full h-full object-cover" />
             </div>
           )}
