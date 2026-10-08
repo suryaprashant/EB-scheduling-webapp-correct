@@ -224,7 +224,7 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
                   <BatteryVisual
                     soc={parseFloat(arrivalSocInput) || 0}
                     size="sm"
-                    showPercentage
+                    showPercentageText
                   />
                 </div>
                 <div className="relative">
