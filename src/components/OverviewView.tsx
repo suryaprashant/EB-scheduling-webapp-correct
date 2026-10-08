@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24, formatTime12 } from '../engine/chargingAllocationEngine';
-import { Zap, Bus, CheckCircle2, ArrowRight, AlertTriangle, BatteryCharging } from 'lucide-react';
+import { Zap, Bus, CalendarDays, CheckCircle2, ArrowRight, BatteryCharging, PlugZap } from 'lucide-react';
 
 interface OverviewViewProps {
   sessions: ChargeSession[];
@@ -42,19 +42,19 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
 
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-white/10">
             <div>
-              <span className="text-2xl font-bold block">{sessions.length}</span>
+              <span className="flex items-center gap-2 text-2xl font-bold"><CalendarDays className="h-6 w-6 text-emerald-300" aria-hidden="true" />{sessions.length}</span>
               <span className="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider">
                 Planned Sessions
               </span>
             </div>
             <div>
-              <span className="text-2xl font-bold block">101</span>
+              <span className="flex items-center gap-2 text-2xl font-bold"><Bus className="h-6 w-6 text-emerald-300" aria-hidden="true" />101</span>
               <span className="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider">
                 Fleet Buses
               </span>
             </div>
             <div>
-              <span className="text-2xl font-bold block">20</span>
+              <span className="flex items-center gap-2 text-2xl font-bold"><PlugZap className="h-6 w-6 text-emerald-300" aria-hidden="true" />20</span>
               <span className="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider">
                 Active Chargers
               </span>

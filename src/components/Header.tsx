@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, session
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className={tab.id === 'chargers' ? 'w-6 h-6' : 'w-4 h-4'} />
                   <span>{tab.label}</span>
                   {tab.badge && (
                     <span

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChargerSnapshot } from '../types';
 import { formatTime24 } from '../engine/chargingAllocationEngine';
+import { Bus, PlugZap } from 'lucide-react';
 
 interface ChargerStatusGridProps {
   minuteOfDay: number;
@@ -79,12 +80,24 @@ const ChargerRow: React.FC<{ snapshot: ChargerSnapshot; isAllocatedHere: boolean
 
   return (
     <div
-      className={`flex items-center justify-between px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${bgClass}`}
+      className={`flex items-center justify-between gap-2 px-3 py-2 rounded-xl border text-xs font-medium transition-all ${bgClass}`}
     >
-      <span className="text-gray-800 font-semibold">
-        Chg {snapshot.chargerNumber.toString().padStart(2, '0')}
-      </span>
-      <span className={`px-2 py-0.5 rounded text-[11px] font-bold ${badgeClass}`}>
+      <div className="flex min-w-0 items-center gap-2.5">
+        <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
+          isAllocatedHere
+            ? 'bg-[#1A6B52] text-white'
+            : isIdle
+              ? 'bg-white text-[#1A6B52]'
+              : 'bg-amber-100 text-[#9A6517]'
+        }`}>
+          <PlugZap className="h-5 w-5" aria-hidden="true" />
+        </span>
+        <span className="truncate text-gray-800 font-semibold">
+          Charger {snapshot.chargerNumber.toString().padStart(2, '0')}
+        </span>
+      </div>
+      <span className={`inline-flex flex-shrink-0 items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-bold ${badgeClass}`}>
+        {!isIdle && <Bus className="h-3.5 w-3.5" aria-hidden="true" />}
         {text}
       </span>
     </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24, formatTime12 } from '../engine/chargingAllocationEngine';
-import { Search, Filter, AlertTriangle, Plus, Trash2 } from 'lucide-react';
+import { AlertTriangle, Bus, CalendarDays, Plus, PlugZap, Search, Trash2 } from 'lucide-react';
 
 interface ScheduleViewProps {
   sessions: ChargeSession[];
@@ -84,11 +84,16 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
     <div className="space-y-6">
       {/* Header controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-[#E4F3EA] text-[#1A6B52]">
+            <CalendarDays className="h-7 w-7" aria-hidden="true" />
+          </div>
+          <div>
           <h2 className="text-xl font-bold text-gray-900">Depot Charge Plan</h2>
           <p className="text-xs text-gray-500">
             {sessions.length} planned sessions across 20 chargers
           </p>
+          </div>
         </div>
 
         <button
@@ -144,8 +149,8 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
           <table className="w-full text-left text-xs">
             <thead className="bg-gray-50 text-gray-500 font-bold uppercase tracking-wider border-b border-gray-200">
               <tr>
-                <th className="px-5 py-3">Bus</th>
-                <th className="px-5 py-3">Charger</th>
+                <th className="px-5 py-3"><span className="inline-flex items-center gap-2"><Bus className="h-4 w-4" aria-hidden="true" />Bus</span></th>
+                <th className="px-5 py-3"><span className="inline-flex items-center gap-2"><PlugZap className="h-4 w-4" aria-hidden="true" />Charger</span></th>
                 <th className="px-5 py-3">Start Time</th>
                 <th className="px-5 py-3">End Time</th>
                 <th className="px-5 py-3">Duration</th>
@@ -159,10 +164,18 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
                 return (
                   <tr key={session.id} className="hover:bg-gray-50/80 transition-colors">
                     <td className="px-5 py-3 font-bold text-gray-900">
-                      Bus {session.bus.toString().padStart(2, '0')}
+                      <span className="inline-flex items-center gap-2">
+                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E4F3EA] text-[#1A6B52]">
+                          <Bus className="h-4 w-4" aria-hidden="true" />
+                        </span>
+                        Bus {session.bus.toString().padStart(2, '0')}
+                      </span>
                     </td>
                     <td className="px-5 py-3 font-semibold text-[#1A6B52]">
-                      Charger {session.charger.toString().padStart(2, '0')}
+                      <span className="inline-flex items-center gap-2">
+                        <PlugZap className="h-4 w-4" aria-hidden="true" />
+                        Charger {session.charger.toString().padStart(2, '0')}
+                      </span>
                     </td>
                     <td className="px-5 py-3">
                       {formatTime24(session.startMinute)}{' '}
