@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24, formatTime12 } from '../engine/chargingAllocationEngine';
+import { BatteryVisual } from './BatteryVisual';
 import { Zap, Bus, CalendarDays, CheckCircle2, ArrowRight, BatteryCharging, PlugZap } from 'lucide-react';
 
 interface OverviewViewProps {
@@ -28,6 +29,16 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     <div className="space-y-6">
       {/* Hero Banner */}
       <div className="bg-[#123D30] rounded-3xl p-7 text-white shadow-xl relative overflow-hidden">
+        {/* Subtle decorative background 3D battery module */}
+        <div className="absolute -right-6 -bottom-6 w-48 h-48 rounded-full overflow-hidden opacity-20 pointer-events-none hidden md:block">
+          <img
+            src="/src/assets/images/ev_battery_pack_1791434747815.jpg"
+            alt="EV Battery Background"
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover"
+          />
+        </div>
+
         <div className="relative z-10 max-w-2xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 rounded-full text-xs font-semibold text-emerald-300 mb-3">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
@@ -40,7 +51,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
             Centralized intelligent management for 101 electric fleet buses across 20 automated fast chargers.
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4 border-t border-white/10">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-white/10">
             <div>
               <span className="flex items-center gap-2 text-2xl font-bold"><CalendarDays className="h-6 w-6 text-emerald-300" aria-hidden="true" />{sessions.length}</span>
               <span className="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider">
@@ -59,6 +70,15 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 Active Chargers
               </span>
             </div>
+            <div>
+              <span className="flex items-center gap-2 text-2xl font-bold">
+                <BatteryVisual soc={85} size="xs" isCharging />
+                85%
+              </span>
+              <span className="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider">
+                Target SOC
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -71,14 +91,22 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           className="bg-white rounded-2xl p-5 shadow-sm border border-emerald-100 hover:border-[#1A6B52] transition-all cursor-pointer group flex items-center justify-between"
         >
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-[#E4F3EA] text-[#1A6B52] flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
-              <BatteryCharging className="w-6 h-6" />
+            <div className="w-14 h-14 rounded-2xl overflow-hidden border border-emerald-200/80 shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform bg-emerald-50">
+              <img
+                src="/src/assets/images/battery_charge_3d_1791434765547.jpg"
+                alt="Battery SOC"
+                referrerPolicy="no-referrer"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 text-sm group-hover:text-[#1A6B52] transition-colors">
-                Bus Arrived? Allocate Charger
-              </h3>
-              <p className="text-xs text-gray-500">
+              <div className="flex items-center gap-2">
+                <h3 className="font-bold text-gray-900 text-sm group-hover:text-[#1A6B52] transition-colors">
+                  Bus Arrived? Allocate Charger
+                </h3>
+                <BatteryVisual soc={90} size="xs" isCharging />
+              </div>
+              <p className="text-xs text-gray-500 mt-0.5">
                 Input Bus #, Arrival time & SOC% to allocate charger & calculate departure SOC
               </p>
             </div>

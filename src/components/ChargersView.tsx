@@ -1,7 +1,8 @@
 import React from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24 } from '../engine/chargingAllocationEngine';
-import { Bus, PlugZap } from 'lucide-react';
+import { BatteryVisual } from './BatteryVisual';
+import { Bus, PlugZap, Zap } from 'lucide-react';
 
 interface ChargersViewProps {
   sessions: ChargeSession[];
@@ -37,8 +38,19 @@ export const ChargersView: React.FC<ChargersViewProps> = ({ sessions }) => {
               className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col justify-between"
             >
               <div>
-                <div className="relative mb-4 flex h-32 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#E4F3EA] via-[#F2FAF5] to-[#D5EBDD]">
+                <div className="relative mb-4 flex h-32 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-[#E4F3EA] via-[#F2FAF5] to-[#D5EBDD] group">
                   <div className="absolute -right-3 -top-8 h-32 w-32 rounded-full bg-white/50" />
+                  
+                  {/* Battery Pack Graphic Badge */}
+                  <div className="absolute left-2.5 bottom-2.5 w-9 h-9 rounded-lg overflow-hidden border border-emerald-300 shadow-xs bg-white/90">
+                    <img
+                      src="/src/assets/images/battery_charge_3d_1791434765547.jpg"
+                      alt="Battery Module"
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  </div>
+
                   <PlugZap
                     className="relative h-16 w-16 text-[#1A6B52] drop-shadow-sm"
                     strokeWidth={1.7}
@@ -72,20 +84,26 @@ export const ChargersView: React.FC<ChargersViewProps> = ({ sessions }) => {
                   {charger.sessions.length === 0 ? (
                     <p className="text-xs text-gray-400 italic">No assigned sessions</p>
                   ) : (
-                    charger.sessions.slice(0, 3).map(s => (
-                      <div
-                        key={s.id}
-                        className="flex items-center justify-between gap-2 text-xs p-2 rounded-lg bg-gray-50 border border-gray-100"
-                      >
-                        <span className="inline-flex items-center gap-1.5 font-bold text-gray-800">
-                          <Bus className="h-3.5 w-3.5 text-[#1A6B52]" aria-hidden="true" />
-                          Bus {s.bus}
-                        </span>
-                        <span className="text-gray-500 text-[11px]">
-                          {formatTime24(s.startMinute)} – {formatTime24(s.endMinute)}
-                        </span>
-                      </div>
-                    ))
+                    charger.sessions.slice(0, 3).map(s => {
+                      const estSoc = Math.min(100, Math.round(s.durationMinutes * 1.055));
+                      return (
+                        <div
+                          key={s.id}
+                          className="flex items-center justify-between gap-2 text-xs p-2 rounded-lg bg-gray-50 border border-gray-100"
+                        >
+                          <div className="flex items-center gap-1.5">
+                            <span className="inline-flex items-center gap-1 font-bold text-gray-800">
+                              <Bus className="h-3.5 w-3.5 text-[#1A6B52]" aria-hidden="true" />
+                              Bus {s.bus}
+                            </span>
+                            <BatteryVisual soc={estSoc} size="xs" isCharging />
+                          </div>
+                          <span className="text-gray-500 text-[11px]">
+                            {formatTime24(s.startMinute)} – {formatTime24(s.endMinute)}
+                          </span>
+                        </div>
+                      );
+                    })
                   )}
                   {charger.sessions.length > 3 && (
                     <p className="text-[10px] text-gray-400 font-medium text-right">

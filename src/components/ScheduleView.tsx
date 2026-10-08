@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24, formatTime12 } from '../engine/chargingAllocationEngine';
-import { AlertTriangle, Bus, CalendarDays, Plus, PlugZap, Search, Trash2 } from 'lucide-react';
+import { BatteryVisual } from './BatteryVisual';
+import { AlertTriangle, Battery, Bus, CalendarDays, Plus, PlugZap, Search, Trash2, Zap } from 'lucide-react';
 
 interface ScheduleViewProps {
   sessions: ChargeSession[];
@@ -85,14 +86,19 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
       {/* Header controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl bg-[#E4F3EA] text-[#1A6B52]">
-            <CalendarDays className="h-7 w-7" aria-hidden="true" />
+          <div className="relative flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl overflow-hidden border border-emerald-200 shadow-xs bg-[#E4F3EA]">
+            <img
+              src="/src/assets/images/battery_charge_3d_1791434765547.jpg"
+              alt="Battery SOC"
+              referrerPolicy="no-referrer"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
-          <h2 className="text-xl font-bold text-gray-900">Depot Charge Plan</h2>
-          <p className="text-xs text-gray-500">
-            {sessions.length} planned sessions across 20 chargers
-          </p>
+            <h2 className="text-xl font-bold text-gray-900">Depot Charge Plan</h2>
+            <p className="text-xs text-gray-500">
+              {sessions.length} planned sessions across 20 chargers · 240 kW DC fast charging
+            </p>
           </div>
         </div>
 
@@ -154,6 +160,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
                 <th className="px-5 py-3">Start Time</th>
                 <th className="px-5 py-3">End Time</th>
                 <th className="px-5 py-3">Duration</th>
+                <th className="px-5 py-3"><span className="inline-flex items-center gap-1.5"><Battery className="h-4 w-4 text-[#1A6B52]" aria-hidden="true" />Est. SOC Gain</span></th>
                 <th className="px-5 py-3">Status</th>
                 <th className="px-5 py-3 text-right">Actions</th>
               </tr>
@@ -161,6 +168,7 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
             <tbody className="divide-y divide-gray-100 font-medium text-gray-800">
               {filtered.map(session => {
                 const isConflict = conflictedIds.has(session.id);
+                const estSocGain = Math.min(100, (session.durationMinutes / 60) * (240 / 360) * 0.95 * 100);
                 return (
                   <tr key={session.id} className="hover:bg-gray-50/80 transition-colors">
                     <td className="px-5 py-3 font-bold text-gray-900">
@@ -187,6 +195,14 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
                     </td>
                     <td className="px-5 py-3 font-semibold">
                       {session.durationMinutes} min
+                    </td>
+                    <td className="px-5 py-3">
+                      <div className="flex items-center gap-2">
+                        <BatteryVisual soc={estSocGain} size="xs" isCharging />
+                        <span className="font-bold text-[#1A6B52] text-xs">
+                          +{estSocGain.toFixed(1)}%
+                        </span>
+                      </div>
                     </td>
                     <td className="px-5 py-3">
                       {isConflict ? (

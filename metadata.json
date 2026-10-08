@@ -1,0 +1,6 @@
+{
+  "name": "DepotCharge",
+  "description": "Electric Bus Charging Scheduler & Fast Charger Allocation Engine for transit depots.",
+  "permissions": [],
+  "capabilities": []
+}

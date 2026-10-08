@@ -9,6 +9,7 @@ import {
 } from '../engine/chargingAllocationEngine';
 import { SocDonutChart } from './SocDonutChart';
 import { ChargerStatusGrid } from './ChargerStatusGrid';
+import { BatteryVisual, BatteryCardPicture } from './BatteryVisual';
 import { Zap, Bus, Clock, Battery, Play, RotateCcw, Sparkles, CheckCircle2, AlertTriangle, PlusCircle } from 'lucide-react';
 
 interface AllocatorViewProps {
@@ -213,9 +214,17 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
 
               {/* Arrival SOC */}
               <div>
-                <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
-                  Electric Bus SOC Level (%)
-                </label>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider">
+                    Electric Bus SOC Level (%)
+                  </label>
+                  {/* Dynamic Battery Visual Preview */}
+                  <BatteryVisual
+                    soc={parseFloat(arrivalSocInput) || 0}
+                    size="sm"
+                    showPercentage
+                  />
+                </div>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                     <Battery className="w-4 h-4 text-[#1A6B52]" />
@@ -237,6 +246,29 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
                   <div className="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-400 font-bold text-xs">
                     %
                   </div>
+                </div>
+
+                {/* SOC Quick Selection Presets */}
+                <div className="flex items-center gap-2 mt-2">
+                  {['10', '20', '35', '50'].map(socPreset => (
+                    <button
+                      key={socPreset}
+                      type="button"
+                      onClick={() => {
+                        setArrivalSocInput(socPreset);
+                        setErrorMessage(null);
+                        setAddedSuccess(false);
+                      }}
+                      className={`flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg border transition-all ${
+                        arrivalSocInput === socPreset
+                          ? 'bg-[#E4F3EA] text-[#1A6B52] border-[#1A6B52]'
+                          : 'bg-gray-50 text-gray-600 border-gray-200 hover:bg-gray-100'
+                      }`}
+                    >
+                      <BatteryVisual soc={parseFloat(socPreset)} size="xs" />
+                      {socPreset}%
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -343,9 +375,14 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
                 </div>
 
                 <div className="bg-white rounded-xl p-3.5 border border-black/5 shadow-2xs">
-                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
-                    Expected SOC
-                  </span>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+                      Expected SOC
+                    </span>
+                    {result.expectedSoc !== null && (
+                      <BatteryVisual soc={result.expectedSoc} size="xs" isCharging />
+                    )}
+                  </div>
                   <span className="text-lg font-extrabold text-[#1A6B52] block">
                     {result.expectedSoc !== null ? `${result.expectedSoc.toFixed(2)}%` : '--'}
                   </span>
@@ -377,28 +414,60 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
             </div>
           )}
 
-          {/* SOC Doughnut Charts Matching VBA UserForm */}
+          {/* SOC Doughnut Charts Matching VBA UserForm with High-Resolution Battery Picture Visuals */}
           {result && (
-            <div className="space-y-3">
-              <div>
-                <h3 className="font-bold text-gray-900 text-sm">
-                  Battery State of Charge (SOC)
-                </h3>
-                <p className="text-xs text-gray-500">
-                  Energy added via 240 kW DC fast chargers (95% efficiency, 360 kWh pack)
-                </p>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-300/40 shadow-xs bg-emerald-50 flex-shrink-0">
+                    <img
+                      src="/src/assets/images/battery_charge_3d_1791434765547.jpg"
+                      alt="3D Battery Pack"
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2">
+                      Battery State of Charge (SOC)
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      Energy added via 240 kW DC fast chargers (95% efficiency, 360 kWh pack)
+                    </p>
+                  </div>
+                </div>
               </div>
 
+              {/* Gauge & 3D Battery Module Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <BatteryCardPicture
+                  title="Arrival State"
+                  subtitle="Initial Bus Battery"
+                  soc={result.arrivalSoc}
+                  isDeparture={false}
+                />
+                <BatteryCardPicture
+                  title="Departure State"
+                  subtitle="Post-Fast Charge Target"
+                  soc={result.expectedSoc ?? result.arrivalSoc}
+                  isDeparture={true}
+                  gain={result.expectedSoc !== null ? result.expectedSoc - result.arrivalSoc : null}
+                />
+              </div>
+
+              {/* Donut Gauges */}
               <div className="flex flex-col sm:flex-row gap-4">
                 <SocDonutChart
                   title="SOC @ Arr. Time"
                   socValue={result.arrivalSoc}
                   color="#9A6517"
+                  isDeparture={false}
                 />
                 <SocDonutChart
                   title="SOC @ Dep. Time"
                   socValue={result.expectedSoc ?? result.arrivalSoc}
                   color="#1A6B52"
+                  isDeparture={true}
                 />
               </div>
             </div>
