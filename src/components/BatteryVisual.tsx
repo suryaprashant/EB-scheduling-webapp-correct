@@ -1,232 +1,403 @@
-import React, { useState } from 'react';
-import { Zap } from 'lucide-react';
+import React from 'react';
+import { Zap, Bus, PlugZap } from 'lucide-react';
 
-export interface BatteryVisualProps {
+export interface VectorBatteryChargePicProps {
   soc: number;
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'hero';
-  showPercentage?: boolean;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  orientation?: 'vertical' | 'horizontal';
   isCharging?: boolean;
-  orientation?: 'horizontal' | 'vertical';
+  showPercentageText?: boolean;
   className?: string;
 }
 
-export const BatteryVisual: React.FC<BatteryVisualProps> = ({
+/**
+ * Dynamic Vector Battery Illustration modeled after the Pinterest reference.
+ * The fill level and color dynamically change based on SOC:
+ * - < 20%: Red
+ * - 20% - 49%: Amber / Orange
+ * - >= 50%: Vivid Green (matching reference illustration)
+ * Displays charging lightning bolt and live % readout.
+ */
+export const VectorBatteryChargePic: React.FC<VectorBatteryChargePicProps> = ({
   soc,
   size = 'md',
-  showPercentage = false,
+  orientation = 'vertical',
   isCharging = false,
-  orientation = 'horizontal',
+  showPercentageText = true,
   className = '',
 }) => {
-  const clampedSoc = Math.max(0, Math.min(100, Math.round(soc * 100) / 100));
+  const clamped = Math.max(0, Math.min(100, Math.round(soc * 10) / 10));
 
-  // Determine color scheme based on SOC
-  const getColorScheme = () => {
-    if (clampedSoc < 20) {
+  // Determine dynamic color theme based on SOC %
+  const getTheme = () => {
+    if (clamped < 20) {
       return {
-        bg: 'from-rose-500 to-red-600',
-        glow: 'rgba(239, 68, 68, 0.4)',
-        border: 'border-red-400',
-        text: 'text-red-700',
-        badgeBg: 'bg-red-50 text-red-700 border-red-200',
-        pulseGlow: 'shadow-[0_0_12px_rgba(239,68,68,0.5)]',
+        gradId: 'redGrad',
+        startColor: '#F87171',
+        endColor: '#DC2626',
+        glowColor: 'rgba(239, 68, 68, 0.45)',
+        borderColor: '#B91C1C',
+        textColor: '#B91C1C',
+        bgCavity: '#1C1917',
       };
     }
-    if (clampedSoc < 50) {
+    if (clamped < 50) {
       return {
-        bg: 'from-amber-400 to-amber-500',
-        glow: 'rgba(245, 158, 11, 0.4)',
-        border: 'border-amber-400',
-        text: 'text-[#9A6517]',
-        badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
-        pulseGlow: 'shadow-[0_0_12px_rgba(245,158,11,0.5)]',
+        gradId: 'amberGrad',
+        startColor: '#FBBF24',
+        endColor: '#D97706',
+        glowColor: 'rgba(245, 158, 11, 0.45)',
+        borderColor: '#B45309',
+        textColor: '#B45309',
+        bgCavity: '#1C1917',
       };
     }
     return {
-      bg: 'from-emerald-400 via-emerald-500 to-[#1A6B52]',
-      glow: 'rgba(16, 185, 129, 0.4)',
-      border: 'border-emerald-500',
-      text: 'text-[#1A6B52]',
-      badgeBg: 'bg-emerald-50 text-[#1A6B52] border-emerald-200',
-      pulseGlow: 'shadow-[0_0_12px_rgba(16,185,129,0.4)]',
+      gradId: 'greenGrad',
+      startColor: '#34D399',
+      endColor: '#059669',
+      glowColor: 'rgba(16, 185, 129, 0.45)',
+      borderColor: '#047857',
+      textColor: '#047857',
+      bgCavity: '#062017',
     };
   };
 
-  const scheme = getColorScheme();
+  const theme = getTheme();
 
-  if (orientation === 'vertical') {
-    // Vertical high-tech battery pack module
-    const heightMap = {
-      xs: { h: 'h-14', w: 'w-7', terminal: 'w-3 h-1', bars: 4 },
-      sm: { h: 'h-20', w: 'w-10', terminal: 'w-4 h-1.5', bars: 5 },
-      md: { h: 'h-28', w: 'w-14', terminal: 'w-6 h-2', bars: 5 },
-      lg: { h: 'h-36', w: 'w-18', terminal: 'w-8 h-2.5', bars: 6 },
-      hero: { h: 'h-44', w: 'w-22', terminal: 'w-10 h-3', bars: 6 },
+  if (orientation === 'horizontal') {
+    // Horizontal vector battery
+    const dims = {
+      xs: { w: 42, h: 20, bolt: 10, font: 9 },
+      sm: { w: 60, h: 26, bolt: 12, font: 10 },
+      md: { w: 90, h: 36, bolt: 16, font: 12 },
+      lg: { w: 120, h: 48, bolt: 20, font: 14 },
+      xl: { w: 160, h: 60, bolt: 24, font: 16 },
     }[size];
 
+    const innerW = dims.w - 14;
+    const innerH = dims.h - 8;
+    const fillW = Math.max(3, (clamped / 100) * innerW);
+
     return (
-      <div className={`inline-flex flex-col items-center ${className}`}>
-        {/* Terminal tip */}
-        <div
-          className={`${heightMap.terminal} rounded-t-sm bg-gradient-to-r from-gray-300 via-gray-100 to-gray-400 shadow-xs border border-b-0 border-gray-400`}
-        />
-        {/* Battery Main Shell */}
-        <div
-          className={`relative ${heightMap.h} ${heightMap.w} rounded-xl p-1 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 border-2 border-gray-700 shadow-lg flex flex-col justify-end overflow-hidden`}
+      <div className={`inline-flex items-center gap-2 ${className}`}>
+        <svg
+          width={dims.w}
+          height={dims.h}
+          viewBox={`0 0 ${dims.w} ${dims.h}`}
+          className="drop-shadow-xs overflow-visible"
         >
-          {/* Subtle interior glossy glass highlight */}
-          <div className="absolute inset-y-0 left-1 w-1/3 bg-gradient-to-r from-white/20 to-transparent pointer-events-none rounded-l-lg z-10" />
+          <defs>
+            <linearGradient id={`hGrad-${theme.gradId}-${clamped}`} x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor={theme.startColor} />
+              <stop offset="100%" stopColor={theme.endColor} />
+            </linearGradient>
+            <filter id="hGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="0" dy="0" stdDeviation="2" floodColor={theme.glowColor} />
+            </filter>
+          </defs>
 
-          {/* Cell Grid Guidelines */}
-          <div className="absolute inset-x-1 inset-y-1 flex flex-col justify-between pointer-events-none z-10 opacity-30">
-            {Array.from({ length: heightMap.bars }).map((_, i) => (
-              <div key={i} className="w-full h-px bg-white/40" />
-            ))}
-          </div>
+          {/* Terminal node on the right */}
+          <rect
+            x={dims.w - 6}
+            y={(dims.h - dims.h * 0.45) / 2}
+            width={5}
+            height={dims.h * 0.45}
+            rx={2}
+            fill="#475569"
+            stroke="#1E293B"
+            strokeWidth="1.5"
+          />
 
-          {/* Liquid Fill Level */}
-          <div
-            className={`w-full rounded-lg bg-gradient-to-t ${scheme.bg} transition-all duration-700 relative overflow-hidden ${
-              isCharging ? 'animate-pulse' : ''
-            }`}
-            style={{ height: `${clampedSoc}%` }}
-          >
-            {/* Top liquid surface glow */}
-            <div className="absolute top-0 inset-x-0 h-1 bg-white/70 shadow-xs" />
-            {isCharging && (
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Zap className="w-4 h-4 text-white drop-shadow animate-bounce" />
-              </div>
-            )}
-          </div>
+          {/* Battery Outer Casing */}
+          <rect
+            x={1.5}
+            y={1.5}
+            width={dims.w - 8}
+            height={dims.h - 3}
+            rx={dims.h * 0.22}
+            fill="#0F172A"
+            stroke="#334155"
+            strokeWidth="2.5"
+          />
 
-          {/* Charge bolt watermark */}
-          {!isCharging && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-          )}
-        </div>
+          {/* Inner cavity fill */}
+          <rect
+            x={4}
+            y={4}
+            width={innerW}
+            height={innerH}
+            rx={dims.h * 0.16}
+            fill={theme.bgCavity}
+          />
 
-        {showPercentage && (
-          <span className={`text-xs font-bold mt-1.5 ${scheme.text}`}>
-            {clampedSoc.toFixed(1)}%
+          {/* Dynamic Fill level */}
+          <rect
+            x={4}
+            y={4}
+            width={fillW}
+            height={innerH}
+            rx={dims.h * 0.16}
+            fill={`url(#hGrad-${theme.gradId}-${clamped})`}
+            filter="url(#hGlow)"
+            className="transition-all duration-700 ease-out"
+          />
+
+          {/* Glass glare highlight */}
+          <path
+            d={`M 6 5 L ${dims.w - 12} 5 L ${dims.w - 14} ${dims.h * 0.35} L 8 ${dims.h * 0.35} Z`}
+            fill="#FFFFFF"
+            fillOpacity="0.2"
+            pointerEvents="none"
+          />
+
+          {/* Lightning bolt centered */}
+          <g transform={`translate(${(dims.w - 8) / 2 - dims.bolt / 2}, ${(dims.h - dims.bolt) / 2})`}>
+            <polygon
+              points={`${dims.bolt * 0.55},0 0,${dims.bolt * 0.55} ${dims.bolt * 0.45},${dims.bolt * 0.55} ${dims.bolt * 0.35},${dims.bolt} ${dims.bolt},${dims.bolt * 0.42} ${dims.bolt * 0.55},${dims.bolt * 0.42}`}
+              fill="#FFFFFF"
+              className={isCharging ? 'animate-pulse' : ''}
+              style={{ filter: 'drop-shadow(0px 1px 2px rgba(0,0,0,0.5))' }}
+            />
+          </g>
+        </svg>
+
+        {showPercentageText && (
+          <span className="font-extrabold text-xs" style={{ color: theme.textColor }}>
+            {clamped.toFixed(1)}%
           </span>
         )}
       </div>
     );
   }
 
-  // Horizontal Battery (Default)
-  const sizeConfig = {
-    xs: { h: 'h-3.5', w: 'w-7', terminal: 'w-1 h-2', padding: 'p-0.5', text: 'text-[10px]' },
-    sm: { h: 'h-5', w: 'w-10', terminal: 'w-1.5 h-3', padding: 'p-0.5', text: 'text-xs' },
-    md: { h: 'h-7', w: 'w-16', terminal: 'w-2 h-4', padding: 'p-1', text: 'text-xs' },
-    lg: { h: 'h-10', w: 'w-24', terminal: 'w-2.5 h-6', padding: 'p-1.5', text: 'text-sm' },
-    hero: { h: 'h-12', w: 'w-32', terminal: 'w-3 h-7', padding: 'p-1.5', text: 'text-base' },
+  // Vertical Vector Battery Illustration (faithfully replicating the Pinterest vector)
+  const dims = {
+    xs: { w: 32, h: 54, capW: 14, capH: 4, bolt: 14, font: 9 },
+    sm: { w: 46, h: 78, capW: 20, capH: 6, bolt: 18, font: 11 },
+    md: { w: 68, h: 112, capW: 28, capH: 8, bolt: 26, font: 13 },
+    lg: { w: 92, h: 152, capW: 36, capH: 10, bolt: 34, font: 17 },
+    xl: { w: 120, h: 196, capW: 48, capH: 14, bolt: 44, font: 22 },
   }[size];
 
+  const bodyW = dims.w;
+  const bodyH = dims.h - dims.capH;
+  const innerMargin = 4.5;
+  const innerW = bodyW - innerMargin * 2;
+  const innerH = bodyH - innerMargin * 2;
+  const fillH = Math.max(5, (clamped / 100) * innerH);
+  const fillY = dims.capH + innerMargin + (innerH - fillH);
+
   return (
-    <div className={`inline-flex items-center gap-1.5 ${className}`}>
-      <div className="relative inline-flex items-center">
-        {/* Main Battery Casing */}
-        <div
-          className={`relative ${sizeConfig.h} ${sizeConfig.w} ${sizeConfig.padding} rounded-lg bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 border-2 border-gray-700 shadow-md overflow-hidden flex items-center`}
-        >
-          {/* Glass reflection gradient highlight */}
-          <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/20 to-transparent pointer-events-none rounded-t-sm z-10" />
+    <div className={`inline-flex flex-col items-center select-none ${className}`}>
+      <svg
+        width={dims.w}
+        height={dims.h}
+        viewBox={`0 0 ${dims.w} ${dims.h}`}
+        className="overflow-visible drop-shadow-md"
+      >
+        <defs>
+          {/* Vertical Dynamic Color Gradient */}
+          <linearGradient id={`vGrad-${theme.gradId}-${clamped}`} x1="0%" y1="100%" x2="0%" y2="0%">
+            <stop offset="0%" stopColor={theme.endColor} />
+            <stop offset="100%" stopColor={theme.startColor} />
+          </linearGradient>
 
-          {/* Internal Fill Level */}
-          <div
-            className={`h-full rounded-sm bg-gradient-to-r ${scheme.bg} transition-all duration-700 relative overflow-hidden flex items-center justify-end ${
-              isCharging ? 'animate-pulse' : ''
-            }`}
-            style={{ width: `${Math.max(clampedSoc > 0 ? 5 : 0, clampedSoc)}%` }}
-          >
-            {/* Energy wavefront highlight */}
-            <div className="h-full w-1 bg-white/70 shadow-xs" />
-          </div>
+          {/* Metallic Top Cap Gradient */}
+          <linearGradient id="capGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#64748B" />
+            <stop offset="50%" stopColor="#CBD5E1" />
+            <stop offset="100%" stopColor="#475569" />
+          </linearGradient>
 
-          {/* Charging Indicator Icon */}
-          {isCharging && (
-            <div className="absolute inset-0 flex items-center justify-center z-20">
-              <Zap className="h-3 w-3 text-white fill-white drop-shadow-md animate-pulse" />
-            </div>
-          )}
-        </div>
+          {/* Outer Battery Border Gradient */}
+          <linearGradient id="bodyBorderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#334155" />
+            <stop offset="100%" stopColor="#0F172A" />
+          </linearGradient>
 
-        {/* Cathode terminal notch */}
-        <div
-          className={`${sizeConfig.terminal} rounded-r-xs bg-gradient-to-r from-gray-400 to-gray-500 border border-l-0 border-gray-600`}
+          <filter id={`vGlow-${clamped}`} x="-20%" y="-20%" width="140%" height="140%">
+            <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor={theme.glowColor} />
+          </filter>
+        </defs>
+
+        {/* 1. Top Terminal Cap (Cathode) */}
+        <rect
+          x={(bodyW - dims.capW) / 2}
+          y={1}
+          width={dims.capW}
+          height={dims.capH + 1}
+          rx={dims.capH * 0.4}
+          fill="url(#capGrad)"
+          stroke="#1E293B"
+          strokeWidth="1.5"
         />
-      </div>
 
-      {showPercentage && (
-        <span className={`font-extrabold ${sizeConfig.text} ${scheme.text}`}>
-          {clampedSoc.toFixed(1)}%
-        </span>
-      )}
+        {/* 2. Main Battery Shell Casing */}
+        <rect
+          x={1.5}
+          y={dims.capH}
+          width={bodyW - 3}
+          height={bodyH - 2}
+          rx={bodyW * 0.24}
+          fill="#0F172A"
+          stroke="url(#bodyBorderGrad)"
+          strokeWidth="3"
+        />
+
+        {/* 3. Interior Dark Cavity */}
+        <rect
+          x={innerMargin}
+          y={dims.capH + innerMargin}
+          width={innerW}
+          height={innerH}
+          rx={bodyW * 0.18}
+          fill={theme.bgCavity}
+        />
+
+        {/* 4. Dynamic Energy Fill (Heights & Color change with SOC) */}
+        <rect
+          x={innerMargin}
+          y={fillY}
+          width={innerW}
+          height={fillH}
+          rx={bodyW * 0.18}
+          fill={`url(#vGrad-${theme.gradId}-${clamped})`}
+          filter={`url(#vGlow-${clamped})`}
+          className="transition-all duration-700 ease-out"
+        />
+
+        {/* 5. Liquid surface meniscus highlight */}
+        {fillH > 6 && (
+          <line
+            x1={innerMargin + 2}
+            y1={fillY + 1}
+            x2={innerMargin + innerW - 2}
+            y2={fillY + 1}
+            stroke="#FFFFFF"
+            strokeWidth="2"
+            strokeOpacity="0.75"
+          />
+        )}
+
+        {/* 6. Vertical glossy reflection highlight on the glass */}
+        <path
+          d={`M ${innerMargin + 2} ${dims.capH + innerMargin + 2} Q ${innerMargin + innerW * 0.3} ${(dims.h) / 2} ${innerMargin + 2} ${dims.h - 8} Z`}
+          fill="#FFFFFF"
+          fillOpacity="0.18"
+          pointerEvents="none"
+        />
+
+        {/* 7. Centered Bold Lightning Bolt Symbol (from reference) */}
+        <g
+          transform={`translate(${(bodyW - dims.bolt) / 2}, ${dims.capH + (bodyH - dims.bolt) / 2 - (showPercentageText && size !== 'xs' ? 8 : 0)})`}
+        >
+          <polygon
+            points={`${dims.bolt * 0.58},0 0,${dims.bolt * 0.56} ${dims.bolt * 0.46},${dims.bolt * 0.56} ${dims.bolt * 0.36},${dims.bolt} ${dims.bolt},${dims.bolt * 0.44} ${dims.bolt * 0.56},${dims.bolt * 0.44}`}
+            fill="#FFFFFF"
+            className={isCharging ? 'animate-pulse' : ''}
+            style={{
+              filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.6))',
+            }}
+          />
+        </g>
+
+        {/* 8. Embedded Percentage Text (if requested) */}
+        {showPercentageText && size !== 'xs' && (
+          <text
+            x={bodyW / 2}
+            y={dims.capH + bodyH * 0.8}
+            textAnchor="middle"
+            fill="#FFFFFF"
+            fontWeight="900"
+            fontSize={dims.font}
+            fontFamily="system-ui, -apple-system, sans-serif"
+            style={{
+              filter: 'drop-shadow(0px 1px 3px rgba(0,0,0,0.85))',
+            }}
+          >
+            {clamped.toFixed(0)}%
+          </text>
+        )}
+      </svg>
     </div>
   );
 };
 
-export interface EvBatteryThumbnailProps {
-  isDeparture?: boolean;
+// Aliased as BatteryVisual for complete backwards compatibility
+export const BatteryVisual: React.FC<VectorBatteryChargePicProps> = (props) => {
+  return <VectorBatteryChargePic {...props} />;
+};
+
+export interface EvChargerThumbnailProps {
   className?: string;
   alt?: string;
+  invertWhite?: boolean;
 }
 
-export const EvBatteryThumbnail: React.FC<EvBatteryThumbnailProps> = ({
-  isDeparture = false,
+export const EvChargerThumbnail: React.FC<EvChargerThumbnailProps> = ({
   className = '',
-  alt = 'EV Battery',
+  alt = 'Car Charging Terminal Icon',
+  invertWhite = false,
 }) => {
-  const [hasError, setHasError] = useState(false);
-
-  const imageSrc = isDeparture
-    ? '/images/battery_charge_3d.jpg'
-    : '/images/ev_battery_pack.jpg';
+  const [hasError, setHasError] = React.useState(false);
 
   if (hasError) {
-    // Beautiful vector 3D-styled fallback with metallic shell and glowing cells
-    return (
-      <div
-        className={`relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-gray-950 via-gray-900 to-[#123D30] p-1.5 shadow-inner rounded-xl ${className}`}
-      >
-        <div className="w-full h-full rounded-lg border border-emerald-500/30 flex flex-col justify-between p-1 bg-black/40">
-          <div className="flex justify-between items-center px-1 pt-0.5">
-            <span className="h-1.5 w-2 rounded-xs bg-emerald-400 shadow-[0_0_6px_#34d399]" />
-            <span className="text-[8px] font-black tracking-widest text-emerald-300">
-              {isDeparture ? '240 kW' : '360 kWh'}
-            </span>
-          </div>
-          <div className="flex items-center justify-center my-auto">
-            <Zap className={`w-5 h-5 ${isDeparture ? 'text-emerald-400 fill-emerald-400 animate-pulse' : 'text-amber-400 fill-amber-400'}`} />
-          </div>
-          <div className="grid grid-cols-4 gap-1 px-0.5 pb-0.5">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <span
-                key={i}
-                className={`h-1.5 rounded-xs ${
-                  isDeparture || i < 2
-                    ? 'bg-gradient-to-t from-emerald-500 to-emerald-300 shadow-[0_0_5px_#10b981]'
-                    : 'bg-gray-700'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
+    return <PlugZap className={className} aria-label={alt} />;
   }
 
   return (
     <img
-      src={imageSrc}
+      src="/images/charger_car_icon.webp"
+      alt={alt}
+      onError={() => setHasError(true)}
+      referrerPolicy="no-referrer"
+      className={`w-full h-full object-contain ${invertWhite ? 'brightness-0 invert' : ''} ${className}`}
+    />
+  );
+};
+
+export interface EvBusThumbnailProps {
+  className?: string;
+  alt?: string;
+}
+
+export const EvBusThumbnail: React.FC<EvBusThumbnailProps> = ({
+  className = '',
+  alt = 'Switch EiV12 Electric Bus',
+}) => {
+  const [hasError, setHasError] = React.useState(false);
+
+  if (hasError) {
+    return <Bus className={className} aria-label={alt} />;
+  }
+
+  return (
+    <img
+      src="/images/bus_switch_eiv12.webp"
       alt={alt}
       onError={() => setHasError(true)}
       referrerPolicy="no-referrer"
       className={`w-full h-full object-cover ${className}`}
+    />
+  );
+};
+
+// Thumbnail helper for battery vector illustration
+export const EvBatteryThumbnail: React.FC<{
+  soc?: number;
+  isDeparture?: boolean;
+  className?: string;
+  alt?: string;
+}> = ({ soc = 75, isDeparture = false, className = '' }) => {
+  return (
+    <VectorBatteryChargePic
+      soc={soc}
+      size="sm"
+      orientation="vertical"
+      isCharging={isDeparture}
+      showPercentageText={false}
+      className={className}
     />
   );
 };
@@ -239,6 +410,10 @@ export interface BatteryCardPictureProps {
   gain?: number | null;
 }
 
+/**
+ * Modern State of Charge Card that prominently features the requested vector battery illustration.
+ * Fully dynamic: level and color (Red/Amber/Green) update cleanly based on the SOC value!
+ */
 export const BatteryCardPicture: React.FC<BatteryCardPictureProps> = ({
   title,
   soc,
@@ -248,34 +423,33 @@ export const BatteryCardPicture: React.FC<BatteryCardPictureProps> = ({
 }) => {
   const clamped = Math.max(0, Math.min(100, Math.round(soc * 100) / 100));
 
-  // Determine state badge
-  const isHigh = clamped >= 75;
-  const isLow = clamped < 25;
+  const isLow = clamped < 20;
+  const isMed = clamped >= 20 && clamped < 50;
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col justify-between flex-1 relative overflow-hidden transition-all hover:shadow-md">
+    <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col justify-between flex-1 relative overflow-hidden transition-all hover:shadow-md hover:border-emerald-200">
       {/* Decorative background glow */}
       <div
-        className={`absolute -right-8 -bottom-8 w-36 h-36 rounded-full blur-2xl pointer-events-none ${
+        className={`absolute -right-8 -bottom-8 w-44 h-44 rounded-full blur-3xl pointer-events-none ${
           isDeparture
-            ? 'bg-emerald-100/60'
+            ? 'bg-emerald-100/70'
             : isLow
-              ? 'bg-red-100/60'
-              : 'bg-amber-100/60'
+              ? 'bg-red-100/70'
+              : 'bg-amber-100/70'
         }`}
       />
 
       {/* Top Header */}
-      <div className="flex items-center justify-between gap-2 mb-3 z-10">
+      <div className="flex items-center justify-between gap-2 mb-4 z-10">
         <div>
           <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 block">
             {subtitle}
           </span>
-          <h4 className="text-sm font-extrabold text-gray-900">{title}</h4>
+          <h4 className="text-base font-extrabold text-gray-900">{title}</h4>
         </div>
 
         <span
-          className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border ${
+          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border ${
             isDeparture
               ? 'bg-emerald-50 text-[#1A6B52] border-emerald-200'
               : isLow
@@ -285,72 +459,82 @@ export const BatteryCardPicture: React.FC<BatteryCardPictureProps> = ({
         >
           {isDeparture ? (
             <>
-              <Zap className="w-3 h-3 text-[#1A6B52] fill-current animate-pulse" />
+              <Zap className="w-3.5 h-3.5 text-[#1A6B52] fill-current animate-pulse" />
               Fast Charged
             </>
           ) : isLow ? (
-            'Low Battery'
+            'Low Battery (<20%)'
           ) : (
             'Arrival State'
           )}
         </span>
       </div>
 
-      {/* Visual Battery Section */}
-      <div className="py-2 flex items-center justify-between gap-4 z-10">
-        {/* Render 3D EV Battery Pack Image */}
-        <div className="relative w-20 h-20 rounded-2xl overflow-hidden border border-gray-100 shadow-inner bg-gradient-to-br from-gray-50 to-gray-100 flex-shrink-0 group">
-          <EvBatteryThumbnail
-            isDeparture={isDeparture}
-            alt={`${title} Battery Graphic`}
-            className="group-hover:scale-105 transition-transform duration-300"
+      {/* Main Interactive Battery Showcase using the Pinterest Vector Illustration */}
+      <div className="py-2 flex items-center justify-between gap-6 z-10">
+        {/* Dynamic Vector Battery Illustration (level and color dynamically change) */}
+        <div className="flex items-center justify-center p-3 rounded-2xl bg-gradient-to-b from-gray-50 to-gray-100 border border-gray-200/80 shadow-xs flex-shrink-0">
+          <VectorBatteryChargePic
+            soc={clamped}
+            size="lg"
+            orientation="vertical"
+            isCharging={isDeparture}
+            showPercentageText={true}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
-          <div className="absolute bottom-1 left-1.5 right-1.5 flex items-center justify-between text-[9px] font-bold text-white drop-shadow">
-            <span>{isDeparture ? '240 kW' : '360 kWh'}</span>
-            <span>{clamped.toFixed(0)}%</span>
-          </div>
         </div>
 
-        {/* Dynamic Battery Level Gauge & Metrics */}
-        <div className="flex-1 space-y-2">
-          <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-black text-gray-900 tracking-tight">
-              {clamped.toFixed(2)}
-              <span className="text-sm font-semibold text-gray-500 ml-0.5">%</span>
-            </span>
+        {/* SOC Details & Metric Readout */}
+        <div className="flex-1 space-y-3">
+          <div>
+            <div className="flex items-baseline gap-1">
+              <span className="text-3xl font-black text-gray-900 tracking-tight">
+                {clamped.toFixed(2)}
+              </span>
+              <span className="text-base font-bold text-gray-400">% SOC</span>
+            </div>
+
             {gain !== null && gain > 0 && (
-              <span className="text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100">
-                +{gain.toFixed(2)}% gain
+              <span className="inline-block mt-1 text-xs font-extrabold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-200">
+                +{gain.toFixed(2)}% fast charge gain
               </span>
             )}
           </div>
 
-          {/* Interactive Horizontal Battery Bar */}
-          <BatteryVisual
-            soc={clamped}
-            size="md"
-            isCharging={isDeparture}
-            orientation="horizontal"
-            className="w-full"
-          />
-
-          <div className="flex items-center justify-between text-[10px] text-gray-500 font-medium">
-            <span>0%</span>
-            <span>50%</span>
-            <span>100%</span>
+          {/* Horizontal Level Bar */}
+          <div className="space-y-1">
+            <VectorBatteryChargePic
+              soc={clamped}
+              size="md"
+              orientation="horizontal"
+              isCharging={isDeparture}
+              showPercentageText={false}
+              className="w-full"
+            />
+            <div className="flex items-center justify-between text-[10px] text-gray-400 font-bold px-1">
+              <span>0% Empty</span>
+              <span>50%</span>
+              <span>100% Full</span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Footer Info */}
-      <div className="pt-3 mt-2 border-t border-gray-100 flex items-center justify-between text-[11px] text-gray-500 z-10">
-        <span className="inline-flex items-center gap-1">
-          <span className="w-1.5 h-1.5 rounded-full bg-[#1A6B52]" />
-          Capacity: {(360 * (clamped / 100)).toFixed(1)} / 360 kWh
+      {/* Footer Capacity Info */}
+      <div className="pt-3.5 mt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 z-10">
+        <span className="inline-flex items-center gap-1.5 font-medium">
+          <span
+            className={`w-2 h-2 rounded-full ${
+              clamped >= 50
+                ? 'bg-emerald-500 shadow-[0_0_6px_#10B981]'
+                : clamped >= 20
+                  ? 'bg-amber-500 shadow-[0_0_6px_#F59E0B]'
+                  : 'bg-red-500 shadow-[0_0_6px_#EF4444]'
+            }`}
+          />
+          Battery Pack: {(360 * (clamped / 100)).toFixed(1)} / 360 kWh
         </span>
-        <span className="font-semibold text-gray-700">
-          {clamped >= 80 ? 'Optimal' : clamped >= 40 ? 'Adequate' : 'Needs Charge'}
+        <span className="font-bold text-gray-700">
+          {clamped >= 80 ? 'Optimal Charge' : clamped >= 40 ? 'Adequate Range' : 'Needs Fast Charge'}
         </span>
       </div>
     </div>

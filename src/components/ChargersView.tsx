@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24 } from '../engine/chargingAllocationEngine';
-import { BatteryVisual, EvBatteryThumbnail } from './BatteryVisual';
+import { BatteryVisual, EvBatteryThumbnail, EvChargerThumbnail, EvBusThumbnail } from './BatteryVisual';
 import { Bus, PlugZap, Zap } from 'lucide-react';
 
 interface ChargersViewProps {
@@ -42,7 +42,7 @@ export const ChargersView: React.FC<ChargersViewProps> = ({ sessions }) => {
                   <div className="absolute -right-3 -top-8 h-32 w-32 rounded-full bg-white/50" />
                   
                   {/* Battery Pack Graphic Badge */}
-                  <div className="absolute left-2.5 bottom-2.5 w-9 h-9 rounded-lg overflow-hidden border border-emerald-300 shadow-xs bg-white/90">
+                  <div className="absolute left-2.5 bottom-2.5 w-9 h-9 rounded-lg overflow-hidden border border-emerald-300 shadow-xs bg-white/90 p-0.5">
                     <EvBatteryThumbnail
                       isDeparture
                       alt="Battery Module"
@@ -50,11 +50,12 @@ export const ChargersView: React.FC<ChargersViewProps> = ({ sessions }) => {
                     />
                   </div>
 
-                  <PlugZap
-                    className="relative h-16 w-16 text-[#1A6B52] drop-shadow-sm"
-                    strokeWidth={1.7}
-                    aria-label={`Charger ${charger.id}`}
-                  />
+                  <div className="relative h-20 w-20 flex items-center justify-center p-2 rounded-2xl bg-white/80 shadow-xs border border-emerald-100">
+                    <EvChargerThumbnail
+                      className="h-full w-full object-contain"
+                      alt={`Charger ${charger.id}`}
+                    />
+                  </div>
                   <span className="absolute bottom-2 right-2 rounded-lg bg-white/90 px-2 py-1 text-[10px] font-bold text-[#1A6B52] shadow-sm">
                     #{charger.id.toString().padStart(2, '0')}
                   </span>
@@ -91,8 +92,10 @@ export const ChargersView: React.FC<ChargersViewProps> = ({ sessions }) => {
                           className="flex items-center justify-between gap-2 text-xs p-2 rounded-lg bg-gray-50 border border-gray-100"
                         >
                           <div className="flex items-center gap-1.5">
-                            <span className="inline-flex items-center gap-1 font-bold text-gray-800">
-                              <Bus className="h-3.5 w-3.5 text-[#1A6B52]" aria-hidden="true" />
+                            <span className="inline-flex items-center gap-1.5 font-bold text-gray-800">
+                              <div className="w-5 h-5 rounded-md overflow-hidden flex-shrink-0 border border-emerald-100 bg-white">
+                                <EvBusThumbnail className="w-full h-full object-cover" alt={`Bus ${s.bus}`} />
+                              </div>
                               Bus {s.bus}
                             </span>
                             <BatteryVisual soc={estSoc} size="xs" isCharging />

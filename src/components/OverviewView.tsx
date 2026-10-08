@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24, formatTime12 } from '../engine/chargingAllocationEngine';
-import { BatteryVisual, EvBatteryThumbnail } from './BatteryVisual';
+import { BatteryVisual, EvBatteryThumbnail, EvChargerThumbnail, EvBusThumbnail, VectorBatteryChargePic } from './BatteryVisual';
 import { Zap, Bus, CalendarDays, CheckCircle2, ArrowRight, BatteryCharging, PlugZap } from 'lucide-react';
 
 interface OverviewViewProps {
@@ -29,13 +29,9 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
     <div className="space-y-6">
       {/* Hero Banner */}
       <div className="bg-[#123D30] rounded-3xl p-7 text-white shadow-xl relative overflow-hidden">
-        {/* Subtle decorative background 3D battery module */}
-        <div className="absolute -right-6 -bottom-6 w-48 h-48 rounded-full overflow-hidden opacity-20 pointer-events-none hidden md:block">
-          <EvBatteryThumbnail
-            isDeparture={false}
-            alt="EV Battery Background"
-            className="w-full h-full object-cover"
-          />
+        {/* Subtle decorative background vector battery */}
+        <div className="absolute -right-4 -bottom-4 opacity-15 pointer-events-none hidden md:flex items-center justify-center">
+          <VectorBatteryChargePic soc={85} size="xl" isCharging showPercentageText={false} />
         </div>
 
         <div className="relative z-10 max-w-2xl">
@@ -58,13 +54,23 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
               </span>
             </div>
             <div>
-              <span className="flex items-center gap-2 text-2xl font-bold"><Bus className="h-6 w-6 text-emerald-300" aria-hidden="true" />101</span>
+              <span className="flex items-center gap-2 text-2xl font-bold">
+                <div className="w-7 h-7 rounded-lg overflow-hidden border border-emerald-400/40 bg-white shadow-xs p-0.5">
+                  <EvBusThumbnail className="w-full h-full object-cover" />
+                </div>
+                101
+              </span>
               <span className="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider">
                 Fleet Buses
               </span>
             </div>
             <div>
-              <span className="flex items-center gap-2 text-2xl font-bold"><PlugZap className="h-6 w-6 text-emerald-300" aria-hidden="true" />20</span>
+              <span className="flex items-center gap-2 text-2xl font-bold">
+                <div className="w-7 h-7 rounded-lg overflow-hidden border border-emerald-400/40 bg-white shadow-xs p-0.5">
+                  <EvChargerThumbnail className="w-full h-full object-contain" />
+                </div>
+                20
+              </span>
               <span className="text-[11px] font-semibold text-emerald-300 uppercase tracking-wider">
                 Active Chargers
               </span>
@@ -90,11 +96,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           className="bg-white rounded-2xl p-5 shadow-sm border border-emerald-100 hover:border-[#1A6B52] transition-all cursor-pointer group flex items-center justify-between"
         >
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-2xl overflow-hidden border border-emerald-200/80 shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform bg-emerald-50">
-              <EvBatteryThumbnail
-                isDeparture
-                alt="Battery SOC"
-                className="w-full h-full object-cover"
+            <div className="w-14 h-14 rounded-2xl flex items-center justify-center border border-emerald-200/80 shadow-xs flex-shrink-0 group-hover:scale-105 transition-transform bg-gradient-to-b from-emerald-50 to-emerald-100 p-1">
+              <VectorBatteryChargePic
+                soc={85}
+                size="sm"
+                isCharging
+                showPercentageText={false}
               />
             </div>
             <div>
@@ -102,7 +109,7 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
                 <h3 className="font-bold text-gray-900 text-sm group-hover:text-[#1A6B52] transition-colors">
                   Bus Arrived? Allocate Charger
                 </h3>
-                <BatteryVisual soc={90} size="xs" isCharging />
+                <BatteryVisual soc={90} size="xs" orientation="horizontal" isCharging showPercentageText={false} />
               </div>
               <p className="text-xs text-gray-500 mt-0.5">
                 Input Bus #, Arrival time & SOC% to allocate charger & calculate departure SOC
@@ -150,12 +157,12 @@ export const OverviewView: React.FC<OverviewViewProps> = ({
           {upcoming.map(s => (
             <div key={s.id} className="py-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-50 text-[#1A6B52] flex items-center justify-center font-bold text-xs">
-                  {s.bus}
+                <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-200 bg-white shadow-2xs flex-shrink-0">
+                  <EvBusThumbnail className="w-full h-full object-cover" alt={`Bus ${s.bus}`} />
                 </div>
                 <div>
                   <span className="font-bold text-gray-900 text-xs block">
-                    Bus {s.bus.toString().padStart(2, '0')}
+                    Bus {s.bus.toString().padStart(2, '0')} (Switch EiV12)
                   </span>
                   <span className="text-[11px] text-gray-500 block">
                     Charger {s.charger.toString().padStart(2, '0')} · {s.durationMinutes} min

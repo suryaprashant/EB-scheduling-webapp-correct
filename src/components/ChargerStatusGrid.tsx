@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChargerSnapshot } from '../types';
 import { formatTime24 } from '../engine/chargingAllocationEngine';
-import { BatteryVisual } from './BatteryVisual';
+import { BatteryVisual, EvChargerThumbnail, EvBusThumbnail } from './BatteryVisual';
 import { Bus, PlugZap } from 'lucide-react';
 
 interface ChargerStatusGridProps {
@@ -84,14 +84,14 @@ const ChargerRow: React.FC<{ snapshot: ChargerSnapshot; isAllocatedHere: boolean
       className={`flex items-center justify-between gap-2 px-3 py-2 rounded-xl border text-xs font-medium transition-all ${bgClass}`}
     >
       <div className="flex min-w-0 items-center gap-2.5">
-        <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
+        <span className={`flex h-9 w-9 flex-shrink-0 items-center justify-center p-1 rounded-lg border ${
           isAllocatedHere
-            ? 'bg-[#1A6B52] text-white'
+            ? 'bg-emerald-50 border-emerald-300'
             : isIdle
-              ? 'bg-white text-[#1A6B52]'
-              : 'bg-amber-100 text-[#9A6517]'
+              ? 'bg-white border-gray-200'
+              : 'bg-amber-50 border-amber-200'
         }`}>
-          <PlugZap className="h-5 w-5" aria-hidden="true" />
+          <EvChargerThumbnail className="h-full w-full object-contain" />
         </span>
         <span className="truncate text-gray-800 font-semibold">
           Charger {snapshot.chargerNumber.toString().padStart(2, '0')}
@@ -106,7 +106,11 @@ const ChargerRow: React.FC<{ snapshot: ChargerSnapshot; isAllocatedHere: boolean
           />
         )}
         <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-lg text-[11px] font-bold ${badgeClass}`}>
-          {!isIdle && <Bus className="h-3.5 w-3.5" aria-hidden="true" />}
+          {!isIdle && (
+            <div className="w-3.5 h-3.5 rounded-xs overflow-hidden flex-shrink-0 bg-white border border-amber-300">
+              <EvBusThumbnail className="w-full h-full object-cover" />
+            </div>
+          )}
           {text}
         </span>
       </div>

@@ -19,22 +19,22 @@ export const SocDonutChart: React.FC<SocDonutChartProps> = ({
   size = 140,
   isDeparture = false,
 }) => {
-  const clamped = Math.max(0, Math.min(100, socValue));
+  const clamped = Math.max(0, Math.min(100, Math.round(socValue * 10) / 10));
   const strokeWidth = 14;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (clamped / 100) * circumference;
 
   return (
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-gray-100 flex flex-col items-center flex-1 relative overflow-hidden group hover:border-emerald-200 transition-all">
+    <div className="bg-white rounded-3xl p-5 shadow-sm border border-gray-100 flex flex-col items-center flex-1 relative overflow-hidden group hover:border-emerald-200 transition-all">
       {/* Battery Picture Header Bar */}
       <div className="w-full flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg overflow-hidden border border-gray-200 shadow-2xs bg-gray-50 flex-shrink-0">
+          <div className="w-9 h-9 rounded-xl overflow-hidden border border-gray-200 shadow-2xs bg-gray-50 flex items-center justify-center p-0.5 flex-shrink-0">
             <EvBatteryThumbnail
+              soc={clamped}
               isDeparture={isDeparture}
-              alt="EV Battery"
-              className="group-hover:scale-110 transition-transform duration-300"
+              alt="Dynamic Battery Vector"
             />
           </div>
           <div>
@@ -48,7 +48,7 @@ export const SocDonutChart: React.FC<SocDonutChartProps> = ({
         </div>
 
         <span
-          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+          className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${
             isDeparture
               ? 'bg-emerald-50 text-[#1A6B52] border-emerald-200'
               : clamped < 20
@@ -57,11 +57,11 @@ export const SocDonutChart: React.FC<SocDonutChartProps> = ({
           }`}
         >
           {isDeparture && <Zap className="w-2.5 h-2.5 text-[#1A6B52] fill-current animate-pulse" />}
-          {isDeparture ? 'Charged' : clamped < 20 ? 'Critical' : 'Arrival'}
+          {isDeparture ? 'Fast Charged' : clamped < 20 ? 'Critical' : 'Arrival'}
         </span>
       </div>
 
-      {/* Donut Chart with Centered Metric and Battery Icon */}
+      {/* Donut Chart with Centered Metric */}
       <div className="relative flex items-center justify-center my-1" style={{ width: size, height: size }}>
         <svg width={size} height={size} className="transform -rotate-90 drop-shadow-2xs">
           {/* Background Ring */}
@@ -103,8 +103,9 @@ export const SocDonutChart: React.FC<SocDonutChartProps> = ({
         <BatteryVisual
           soc={clamped}
           size="sm"
+          orientation="horizontal"
           isCharging={isDeparture}
-          showPercentage={false}
+          showPercentageText={false}
           className="w-full justify-center"
         />
         <div className="w-full flex justify-between text-[9px] text-gray-400 font-semibold px-2">

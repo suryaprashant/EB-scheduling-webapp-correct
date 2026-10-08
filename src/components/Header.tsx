@@ -1,5 +1,6 @@
 import React from 'react';
-import { Zap, Calendar, PlugZap, LayoutDashboard } from 'lucide-react';
+import { Zap, Calendar, LayoutDashboard } from 'lucide-react';
+import { EvChargerThumbnail } from './BatteryVisual';
 
 interface HeaderProps {
   currentTab: string;
@@ -12,7 +13,7 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, session
     { id: 'allocate', label: 'Allocate', icon: Zap },
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'schedule', label: 'Schedule', icon: Calendar, badge: sessionCount },
-    { id: 'chargers', label: 'Chargers', icon: PlugZap, badge: '20' },
+    { id: 'chargers', label: 'Chargers', isChargerTab: true, badge: '20' },
   ];
 
   return (
@@ -21,8 +22,8 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, session
         <div className="flex items-center justify-between h-16">
           {/* Brand */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#E4F3EA] flex items-center justify-center text-[#1A6B52] shadow-xs">
-              <Zap className="w-5 h-5 fill-current" />
+            <div className="w-10 h-10 rounded-xl bg-[#E4F3EA] flex items-center justify-center p-1.5 shadow-xs border border-emerald-100">
+              <EvChargerThumbnail className="w-full h-full object-contain" alt="DepotCharge" />
             </div>
             <div>
               <span className="text-[10px] font-extrabold tracking-widest text-[#718078] uppercase block">
@@ -49,7 +50,17 @@ export const Header: React.FC<HeaderProps> = ({ currentTab, onTabChange, session
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
                   }`}
                 >
-                  <Icon className={tab.id === 'chargers' ? 'w-6 h-6' : 'w-4 h-4'} />
+                  {tab.isChargerTab ? (
+                    <div className="w-5 h-5 flex items-center justify-center rounded-md overflow-hidden flex-shrink-0">
+                      <EvChargerThumbnail
+                        invertWhite={isActive}
+                        className="w-full h-full object-contain"
+                        alt="Chargers Tab"
+                      />
+                    </div>
+                  ) : (
+                    Icon && <Icon className="w-4 h-4" />
+                  )}
                   <span>{tab.label}</span>
                   {tab.badge && (
                     <span

@@ -9,7 +9,7 @@ import {
 } from '../engine/chargingAllocationEngine';
 import { SocDonutChart } from './SocDonutChart';
 import { ChargerStatusGrid } from './ChargerStatusGrid';
-import { BatteryVisual, BatteryCardPicture, EvBatteryThumbnail } from './BatteryVisual';
+import { BatteryVisual, BatteryCardPicture, EvBatteryThumbnail, EvChargerThumbnail, EvBusThumbnail, VectorBatteryChargePic } from './BatteryVisual';
 import { Zap, Bus, Clock, Battery, Play, RotateCcw, Sparkles, CheckCircle2, AlertTriangle, PlusCircle } from 'lucide-react';
 
 interface AllocatorViewProps {
@@ -151,8 +151,10 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
                   Electric Bus Number
                 </label>
                 <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                    <Bus className="w-6 h-6 text-[#1A6B52]" />
+                  <div className="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
+                    <div className="w-7 h-7 rounded-lg overflow-hidden border border-emerald-200 bg-white shadow-2xs">
+                      <EvBusThumbnail className="w-full h-full object-cover" alt="Switch EiV12" />
+                    </div>
                   </div>
                   <input
                     type="number"
@@ -337,9 +339,14 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
               {/* 4 Output Metrics Tiles */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
                 <div className="bg-white rounded-xl p-3.5 border border-black/5 shadow-2xs">
-                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block mb-1">
-                    Allocated Charger
-                  </span>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider block">
+                      Allocated Charger
+                    </span>
+                    <div className="w-6 h-6 rounded-md overflow-hidden bg-emerald-50 border border-emerald-200 p-0.5">
+                      <EvChargerThumbnail className="w-full h-full object-contain" />
+                    </div>
+                  </div>
                   <span className="text-xl font-extrabold text-[#1A6B52] block">
                     {result.allocatedCharger
                       ? `Charger ${result.allocatedCharger.toString().padStart(2, '0')}`
@@ -419,8 +426,8 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl overflow-hidden border border-emerald-300/40 shadow-xs bg-emerald-50 flex-shrink-0">
-                    <EvBatteryThumbnail isDeparture alt="3D Battery Pack" className="w-full h-full object-cover" />
+                  <div className="flex items-center justify-center p-1.5 rounded-xl border border-emerald-300/40 shadow-xs bg-emerald-50 flex-shrink-0">
+                    <VectorBatteryChargePic soc={result.expectedSoc ?? result.arrivalSoc} size="xs" isCharging />
                   </div>
                   <div>
                     <h3 className="font-bold text-gray-900 text-sm flex items-center gap-2">

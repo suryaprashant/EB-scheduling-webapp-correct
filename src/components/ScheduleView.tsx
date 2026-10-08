@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ChargeSession } from '../types';
 import { formatTime24, formatTime12 } from '../engine/chargingAllocationEngine';
-import { BatteryVisual, EvBatteryThumbnail } from './BatteryVisual';
+import { BatteryVisual, EvBatteryThumbnail, EvChargerThumbnail, EvBusThumbnail, VectorBatteryChargePic } from './BatteryVisual';
 import { AlertTriangle, Battery, Bus, CalendarDays, Plus, PlugZap, Search, Trash2, Zap } from 'lucide-react';
 
 interface ScheduleViewProps {
@@ -86,12 +86,8 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
       {/* Header controls */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="relative flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl overflow-hidden border border-emerald-200 shadow-xs bg-[#E4F3EA]">
-            <EvBatteryThumbnail
-              isDeparture
-              alt="Battery SOC"
-              className="w-full h-full object-cover"
-            />
+          <div className="relative flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-2xl border border-emerald-200 shadow-xs bg-[#E4F3EA] p-1">
+            <VectorBatteryChargePic soc={85} size="sm" isCharging showPercentageText={false} />
           </div>
           <div>
             <h2 className="text-xl font-bold text-gray-900">Depot Charge Plan</h2>
@@ -154,8 +150,22 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
           <table className="w-full text-left text-xs">
             <thead className="bg-gray-50 text-gray-500 font-bold uppercase tracking-wider border-b border-gray-200">
               <tr>
-                <th className="px-5 py-3"><span className="inline-flex items-center gap-2"><Bus className="h-4 w-4" aria-hidden="true" />Bus</span></th>
-                <th className="px-5 py-3"><span className="inline-flex items-center gap-2"><PlugZap className="h-4 w-4" aria-hidden="true" />Charger</span></th>
+                <th className="px-5 py-3">
+                  <span className="inline-flex items-center gap-1.5">
+                    <div className="w-4 h-4 rounded-xs overflow-hidden flex-shrink-0 bg-white border border-gray-200">
+                      <EvBusThumbnail className="w-full h-full object-cover" />
+                    </div>
+                    Bus
+                  </span>
+                </th>
+                <th className="px-5 py-3">
+                  <span className="inline-flex items-center gap-1.5">
+                    <div className="w-4 h-4 rounded-xs overflow-hidden flex-shrink-0 bg-white border border-gray-200">
+                      <EvChargerThumbnail className="w-full h-full object-contain" />
+                    </div>
+                    Charger
+                  </span>
+                </th>
                 <th className="px-5 py-3">Start Time</th>
                 <th className="px-5 py-3">End Time</th>
                 <th className="px-5 py-3">Duration</th>
@@ -172,15 +182,17 @@ export const ScheduleView: React.FC<ScheduleViewProps> = ({ sessions, onDeleteSe
                   <tr key={session.id} className="hover:bg-gray-50/80 transition-colors">
                     <td className="px-5 py-3 font-bold text-gray-900">
                       <span className="inline-flex items-center gap-2">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#E4F3EA] text-[#1A6B52]">
-                          <Bus className="h-4 w-4" aria-hidden="true" />
+                        <span className="flex h-8 w-8 items-center justify-center rounded-lg overflow-hidden border border-emerald-200 bg-white">
+                          <EvBusThumbnail className="w-full h-full object-cover" alt={`Bus ${session.bus}`} />
                         </span>
                         Bus {session.bus.toString().padStart(2, '0')}
                       </span>
                     </td>
                     <td className="px-5 py-3 font-semibold text-[#1A6B52]">
                       <span className="inline-flex items-center gap-2">
-                        <PlugZap className="h-4 w-4" aria-hidden="true" />
+                        <div className="w-6 h-6 rounded-md overflow-hidden flex-shrink-0 bg-emerald-50 border border-emerald-200 p-0.5">
+                          <EvChargerThumbnail className="w-full h-full object-contain" alt={`Charger ${session.charger}`} />
+                        </div>
                         Charger {session.charger.toString().padStart(2, '0')}
                       </span>
                     </td>
