@@ -309,7 +309,9 @@ export const AllocatorView: React.FC<AllocatorViewProps> = ({ sessions, onAddSes
                     Allocated Charger
                   </span>
                   <span className="text-xl font-extrabold text-[#1A6B52] block">
-                    {result.allocatedCharger ? `Chg ${result.allocatedCharger}` : 'None'}
+                    {result.allocatedCharger
+                      ? `Charger ${result.allocatedCharger.toString().padStart(2, '0')}`
+                      : 'None'}
                   </span>
                   <span className="text-[10px] font-medium text-gray-400 block mt-0.5">
                     {result.isMissedAndReallocated ? 'Reallocated' : 'Scheduled'}
